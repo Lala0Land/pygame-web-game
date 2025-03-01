@@ -2,29 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pygame Web Game</title>
-    <style>
-        body {
-            margin: 0;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        canvas {
-            border: 2px solid white;
-        }
-    </style>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 </head>
 <body>
-    <script type="module">
-        import init from "./game.js";
-        init();
+    <h2>Pygame Web Game</h2>
+    <button onclick="runGame()">Запустить игру</button>
+    <script>
+        async function runGame() {
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage(["micropip"]);
+            await pyodide.runPythonAsync(`
+                import pygame
+                pygame.init()
+                screen = pygame.display.set_mode((800, 600))
+                pygame.display.set_caption("Click the Enemies")
+                running = True
+                while running:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                    screen.fill((0, 0, 0))
+                    pygame.display.flip()
+                pygame.quit()
+            `);
+        }
     </script>
-    <noscript>
-        <p style="color: white; text-align: center;">Enable JavaScript to play the game.</p>
-    </noscript>
 </body>
 </html>
