@@ -8,12 +8,22 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
+            background-color: black;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            margin: auto;
         }
         #restartButton {
             display: none;
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 18px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 20px;
             background-color: #ff4500;
             color: white;
             border: none;
@@ -26,7 +36,6 @@
     </style>
 </head>
 <body>
-    <h2>Click the Enemies</h2>
     <button id="restartButton" onclick="restartGame()">Play Again</button>
     <script>
         let enemies = [];
@@ -44,17 +53,17 @@
         }
 
         function draw() {
+            background(0);
+
             if (gameOver) {
-                background(0);
                 fill(255);
                 textSize(32);
                 textAlign(CENTER, CENTER);
-                text(`Game Over! Score: ${score}`, width / 2, height / 2 - 20);
+                text(`Game Over!`, width / 2, height / 2 - 40);
+                text(`Score: ${score}`, width / 2, height / 2);
                 document.getElementById("restartButton").style.display = "block"; // Show the restart button
                 return;
             }
-
-            background(0);
 
             // Center circle (blue area)
             fill(0, 0, 255);
@@ -79,10 +88,11 @@
                 }
             }
 
-            // Score display
+            // Score display (positioned at the top-left corner)
             fill(255);
             textSize(20);
-            text(`Score: ${score}`, 10, 30);
+            textAlign(LEFT, TOP);
+            text(`Score: ${score}`, 20, 20);
         }
 
         function mousePressed() {
@@ -187,4 +197,3 @@
     </script>
 </body>
 </html>
-
