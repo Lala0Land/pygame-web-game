@@ -1,13 +1,36 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Click the Enemies</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #restartButton {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #restartButton:hover {
+            background-color: #ff6347;
+        }
+    </style>
 </head>
 <body>
+    <h2>Click the Enemies</h2>
+    <button id="restartButton" onclick="restartGame()">Play Again</button>
     <script>
         let enemies = [];
+        let particles = [];
         let centerX, centerY;
         let centerRadius = 50;
         let gameOver = false;
@@ -26,17 +49,18 @@
                 fill(255);
                 textSize(32);
                 textAlign(CENTER, CENTER);
-                text(`Game Over! Score: ${score}`, width / 2, height / 2);
+                text(`Game Over! Score: ${score}`, width / 2, height / 2 - 20);
+                document.getElementById("restartButton").style.display = "block"; // Show the restart button
                 return;
             }
 
             background(0);
 
-            // Центр (синее поле)
+            // Center circle (blue area)
             fill(0, 0, 255);
             ellipse(centerX, centerY, centerRadius * 2);
 
-            // Враги
+            // Update and draw enemies
             for (let i = enemies.length - 1; i >= 0; i--) {
                 enemies[i].move();
                 enemies[i].display();
@@ -46,7 +70,16 @@
                 }
             }
 
-            // Очки
+            // Update and draw particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].display();
+                if (particles[i].life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Score display
             fill(255);
             textSize(20);
             text(`Score: ${score}`, 10, 30);
@@ -55,6 +88,10 @@
         function mousePressed() {
             for (let i = enemies.length - 1; i >= 0; i--) {
                 if (enemies[i].clicked(mouseX, mouseY)) {
+                    // Add explosion effect (particles)
+                    for (let j = 0; j < 20; j++) {
+                        particles.push(new Particle(enemies[i].x, enemies[i].y));
+                    }
                     enemies.splice(i, 1);
                     score += 1;
                 }
@@ -106,11 +143,48 @@
             }
         }
 
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.life = random(20, 40);
+                this.size = random(2, 4);
+                let angle = random(TWO_PI);
+                let speed = random(2, 5);
+                this.vx = cos(angle) * speed;
+                this.vy = sin(angle) * speed;
+                this.color = color(255, random(50, 255), 0); // Orange-red particles
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 1;
+            }
+
+            display() {
+                if (this.life > 0) {
+                    fill(this.color);
+                    ellipse(this.x, this.y, this.size);
+                }
+            }
+        }
+
         function spawnEnemy() {
             if (!gameOver) {
                 enemies.push(new Enemy());
             }
         }
+
+        function restartGame() {
+            enemies = [];
+            particles = [];
+            gameOver = false;
+            score = 0;
+            document.getElementById("restartButton").style.display = "none"; // Hide the button
+            loop();
+        }
     </script>
 </body>
 </html>
+
